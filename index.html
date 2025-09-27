@@ -1,350 +1,640 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Hot Wheels</title>
-<style>
-  :root{
-    --azul-1:#071527;
-    --azul-2:#0b2a4a;
-    --verde-tallo:#1ea05b;
-    --verde-hoja:#149b5f;
-    --tierra-1:#4b2f20;
-    --tierra-2:#7a4f39;
-    --tierra-3:#2f1e15;
-    --papel-acc:#6a93ff;
-    --texto:#e9f1ff;
-  }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hot Wheels</title>
+  <style>
+    :root {
+      --azul-1: #071527;
+      --azul-2: #0b2a4a;
+      --verde-tallo: #1ea05b;
+      --verde-hoja: #149b5f;
+      --tierra-1: #4b2f20;
+      --tierra-2: #7a4f39;
+      --tierra-3: #2f1e15;
+      --papel-acc: #6a93ff;
+      --texto: #e9f1ff;
+    }
 
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    color:var(--texto);
-    background: radial-gradient(1200px 600px at 50% 120%, var(--azul-2), var(--azul-1));
-    overflow:hidden;
-  }
+    * {
+      box-sizing: border-box
+    }
 
-  /* Fondo animado (estrellas/partículas sutiles) */
-  .background{ position:fixed; inset:0; z-index:-1; overflow:hidden; }
-  .stars, .stars2{
-    position:absolute; inset:-50% -50%; width:200%; height:200%; pointer-events:none;
-  }
-  .stars{
-    background-image:
-      radial-gradient(1px 1px at 20px 30px, #fff8 35%, transparent 36%),
-      radial-gradient(1px 1px at 120px 80px, #fff5 35%, transparent 36%),
-      radial-gradient(1px 1px at 220px 160px, #fff7 35%, transparent 36%);
-    opacity:.5; animation: drift 140s linear infinite;
-  }
-  .stars2{
-    background-image:
-      radial-gradient(1.5px 1.5px at 60px 40px, #fff4 40%, transparent 41%),
-      radial-gradient(1.5px 1.5px at 260px 140px, #fff4 40%, transparent 41%);
-    opacity:.25; animation: drift 200s linear infinite reverse;
-  }
-  @keyframes drift{ from{transform:translate3d(0,0,0)} to{transform:translate3d(-20%,-20%,0)} }
+    html,
+    body {
+      height: 100%
+    }
 
-  .screen{ position:fixed; inset:0; display:grid; place-items:center; padding:24px; }
-  .hidden{ display:none !important; }
+    body {
+      margin: 0;
+      font-family: system-ui, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: var(--texto);
+      background: radial-gradient(1200px 600px at 50% 120%, var(--azul-2), var(--azul-1));
+      overflow: hidden;
+    }
 
-  /* Pantalla 1 */
-  .start-card{
-    display:flex; flex-direction:column; align-items:center; gap:14px;
-    text-align:center; padding:34px;
-    background: linear-gradient(180deg,#0f2c5b,#081a36);
-    border-radius:18px; border:1px solid #2a4f86aa;
-    box-shadow: 0 20px 50px #0008, inset 0 0 40px #0e2c5766;
-    max-width:520px; width:min(92vw,520px);
-    animation: pop .6s ease-out;
-  }
-  @keyframes pop{ from{transform:scale(.96);opacity:0} to{transform:scale(1);opacity:1} }
+    /* Fondo animado */
+    .background {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      overflow: hidden;
+    }
 
-  .tap-title{ font-size:clamp(26px,4.2vw,36px); font-weight:800; text-shadow:0 6px 20px #0009; }
-  .heart{ font-size:clamp(46px,8vw,72px); filter:drop-shadow(0 0 10px #ff6ea8aa); cursor:pointer; animation:beat 1.25s infinite; }
-  @keyframes beat{ 0%,100%{transform:scale(1)} 25%{transform:scale(1.08)} 50%{transform:scale(.98)} 75%{transform:scale(1.06)} }
-  .tiny-img{ width:min(160px, 48vw); border-radius:12px; border:1px solid #ffffff22; box-shadow:0 10px 25px #0009; }
-  .tap-btn{ padding:12px 18px; border-radius:12px; background:linear-gradient(180deg,#6aa2ff,#3c7cff); color:white; border:none; cursor:pointer; font-weight:700; }
+    .stars,
+    .stars2 {
+      position: absolute;
+      inset: -50% -50%;
+      width: 200%;
+      height: 200%;
+      pointer-events: none;
+    }
 
-  /* Pantalla 2 (escena principal) */
-  .stage{ position:relative; width:100%; height:100%; display:grid; place-items:center; padding:16px; }
-  .headline{ position:absolute; top:22px; width:100%; text-align:center; font-weight:800; font-size:clamp(18px,3.8vw,44px); text-shadow:0 6px 22px #0009; }
-  .headline .date{ display:block; opacity:.95; font-weight:700; font-size:.9em; }
+    .stars {
+      background-image:
+        radial-gradient(1px 1px at 20px 30px, #fff8 35%, transparent 36%),
+        radial-gradient(1px 1px at 120px 80px, #fff5 35%, transparent 36%),
+        radial-gradient(1px 1px at 220px 160px, #fff7 35%, transparent 36%);
+      opacity: .5;
+      animation: drift 140s linear infinite;
+    }
 
-  .floating{ animation: float 5.5s ease-in-out infinite; transform-origin:50% 100%; }
-  @keyframes float{ 0%,100%{transform:translateY(0px) rotate(0)} 50%{transform:translateY(-10px) rotate(.6deg)} }
+    .stars2 {
+      background-image:
+        radial-gradient(1.5px 1.5px at 60px 40px, #fff4 40%, transparent 41%),
+        radial-gradient(1.5px 1.5px at 260px 140px, #fff4 40%, transparent 41%);
+      opacity: .25;
+      animation: drift 200s linear infinite reverse;
+    }
 
-  .bouquet{ position:relative; width:min(840px,92vw); aspect-ratio: 1 / 1.05; filter: drop-shadow(0 30px 50px #0009); }
+    @keyframes drift {
+      from {
+        transform: translate3d(0, 0, 0)
+      }
 
-  /* Montículo de tierra (nuevo) */
-  .mound{
-    position:absolute; left:50%; bottom:6%;
-    width:240px; max-width:40vw; height:110px; transform:translateX(-50%);
-    border-radius:60px 60px 24px 24px / 80px 80px 20px 20px;
-    background: linear-gradient(180deg, var(--tierra-2), var(--tierra-1));
-    box-shadow: 0 18px 36px #0008, inset 0 -10px 24px rgba(0,0,0,0.35);
-    display:flex; align-items:flex-end; justify-content:center;
-  }
-  /* pequeños detalles de tierra (piedras/volumen) */
-  .mound::before, .mound::after{
-    content:""; position:absolute; bottom:12px; width:80px; height:40px; border-radius:40px; opacity:.9;
-    background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.03), transparent 30%);
-    transform:translateX(-90px) rotate(-8deg);
-  }
-  .mound::after{ transform:translateX(90px) rotate(8deg); width:90px; opacity:.8; }
+      to {
+        transform: translate3d(-20%, -20%, 0)
+      }
+    }
 
-  /* Hojas pequeñas a los lados del montículo */
-  .mound .leaf{
-    position:absolute; bottom:28px; width:96px; height:48px; border-radius:40px;
-    background: linear-gradient(90deg, #1dd082, var(--verde-hoja));
-    transform-origin:left center; opacity:0.95; filter: drop-shadow(0 8px 12px #0006);
-  }
-  .mound .leaf.left{ left:-58px; transform: rotate(-18deg) scale(.95); clip-path: ellipse(70% 70% at 20% 50%); }
-  .mound .leaf.right{ right:-58px; transform: rotate(18deg) scale(.95); clip-path: ellipse(70% 70% at 80% 50%); }
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
 
-  /* Tallos: arrancan desde montículo */
-  .stems{ position:absolute; left:50%; bottom:20%; width:86%; height:66%; transform:translateX(-50%); pointer-events:none; }
-  .stem{
-    --angle:0deg; --x:0px; --len: 78%;
-    position:absolute; bottom:0; left:50%;
-    width:6px; height: var(--len);
-    transform: translateX(-50%) rotate(var(--angle)) translateX(var(--x));
-    transform-origin: bottom center;
-    background: linear-gradient(180deg,#0b6a3a,var(--verde-tallo));
-    border-radius: 10px; box-shadow: 0 0 0 1px rgba(0,0,0,0.12) inset;
-    animation: sway 4.5s ease-in-out infinite;
-    pointer-events:auto;
-  }
-  @keyframes sway{ 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.03)} }
+    .hidden {
+      display: none !important;
+    }
 
-  .stem::before, .stem::after{
-    content:""; position:absolute; width:22px; height:12px; top:34%;
-    background: radial-gradient(90% 100% at 70% 50%, #1dd082 0%, var(--verde-hoja) 60%, #0b6a3a 100%);
-    border-radius: 90% 10% 90% 10% / 70% 30% 70% 30%; filter: drop-shadow(0 4px 6px #0006);
-  }
-  .stem::before{ left:-18px; transform:rotate(-25deg); }
-  .stem::after{ right:-18px; transform:scaleX(-1) rotate(-25deg); }
+    /* Pantalla 1 */
+    .start-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      text-align: center;
+      padding: 34px;
+      background: linear-gradient(180deg, #0f2c5b, #081a36);
+      border-radius: 18px;
+      border: 1px solid #2a4f86aa;
+      box-shadow: 0 20px 50px #0008, inset 0 0 40px #0e2c5766;
+      max-width: 520px;
+      width: min(92vw, 520px);
+      animation: pop .6s ease-out;
+    }
 
-  /* Carrito como "flor" */
-  .car{
-    position:absolute; left:50%; top:-8px; transform: translate(-50%,-100%) rotate(var(--angle));
-    width:120px; max-width:22vw; aspect-ratio: 16/11;
-    border-radius:10px; overflow:hidden; cursor:pointer; transition: transform .18s ease;
-    box-shadow: 0 12px 24px #0009, 0 0 24px rgba(106,162,255,0.15);
-    background:linear-gradient(180deg,#0a203f,#08223b);
-    border:1px solid #ffffff10;
-  }
-  .car img{ width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
-  .car:hover{ transform: translate(-50%,-104%) scale(1.06); }
+    @keyframes pop {
+      from {
+        transform: scale(.96);
+        opacity: 0
+      }
 
-  /* Lazo decorativo (sutil encima del montículo) */
-  .bow{
-    position:absolute; left:50%; bottom:34%; transform:translateX(-50%); width:180px; height:16px; border-radius:12px;
-    background: linear-gradient(90deg,#1d59ff,#6aa2ff 60%,#1d59ff); box-shadow: 0 8px 16px #0006, inset 0 -6px 10px rgba(10,40,120,0.3);
-  }
+      to {
+        transform: scale(1);
+        opacity: 1
+      }
+    }
 
-  /* Modal */
-  .modal{
-    position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
-    background:#0008; backdrop-filter: blur(4px); padding:20px; opacity:0; pointer-events:none; transition:opacity .18s ease;
-  }
-  .modal.open{ opacity:1; pointer-events:auto; }
-  .modal-content{
-    position:relative; width:min(920px,95vw); max-height:90vh; border-radius:14px; overflow:hidden;
-    background: linear-gradient(180deg,#0f2446,#071428); border:1px solid #ffffff14; box-shadow: 0 20px 60px #000c;
-    animation: pop .18s ease-out;
-  }
-  .modal-content img{ width:100%; height:auto; display:block; }
-  .close{ position:absolute; top:8px; right:8px; width:40px; height:40px; border-radius:50%; border:none; cursor:pointer; background:#081a36; color:#fff; font-size:18px; box-shadow:0 8px 20px #0008; }
+    .tap-title {
+      font-size: clamp(26px, 4.2vw, 36px);
+      font-weight: 800;
+      text-shadow: 0 6px 20px #0009;
+    }
 
-  .credit{ position:fixed; right:12px; bottom:10px; opacity:.5; font-size:12px; }
+    .heart {
+      font-size: clamp(46px, 8vw, 72px);
+      filter: drop-shadow(0 0 10px #ff6ea8aa);
+      cursor: pointer;
+      animation: beat 1.25s infinite;
+    }
 
-  /* Responsive */
-  @media (max-width:620px){
-    .car{ width:100px; }
-    .mound{ width:200px; height:96px; }
-    .bow{ width:140px; }
-  }
-</style>
+    @keyframes beat {
+
+      0%,
+      100% {
+        transform: scale(1)
+      }
+
+      25% {
+        transform: scale(1.08)
+      }
+
+      50% {
+        transform: scale(.98)
+      }
+
+      75% {
+        transform: scale(1.06)
+      }
+    }
+
+    .tiny-img {
+      width: min(160px, 48vw);
+      border-radius: 12px;
+      border: 1px solid #ffffff22;
+      box-shadow: 0 10px 25px #0009;
+    }
+
+    .tap-btn {
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #6aa2ff, #3c7cff);
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    /* Pantalla 2 */
+    .stage {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .headline {
+      position: absolute;
+      top: 22px;
+      width: 100%;
+      text-align: center;
+      font-weight: 800;
+      font-size: clamp(18px, 3.8vw, 44px);
+      text-shadow: 0 6px 22px #0009;
+    }
+
+    .headline .date {
+      display: block;
+      opacity: .95;
+      font-weight: 700;
+      font-size: .9em;
+    }
+
+    .floating {
+      animation: float 5.5s ease-in-out infinite;
+      transform-origin: 50% 100%;
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px) rotate(0)
+      }
+
+      50% {
+        transform: translateY(-10px) rotate(.6deg)
+      }
+    }
+
+    .bouquet {
+      position: relative;
+      width: min(840px, 92vw);
+      aspect-ratio: 1 / 1.05;
+      filter: drop-shadow(0 30px 50px #0009);
+    }
+
+
+    .mound {
+      position: absolute;
+      left: 50%;
+      bottom: 6%;
+      width: 240px;
+      max-width: 40vw;
+      height: 110px;
+      transform: translateX(-50%);
+      border-radius: 60px 60px 24px 24px / 80px 80px 20px 20px;
+      background: linear-gradient(180deg, var(--tierra-2), var(--tierra-1));
+      box-shadow: 0 18px 36px #0008, inset 0 -10px 24px rgba(0, 0, 0, 0.35);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .mound::before,
+    .mound::after {
+      content: "";
+      position: absolute;
+      bottom: 12px;
+      width: 80px;
+      height: 40px;
+      border-radius: 40px;
+      opacity: .9;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.03), transparent 30%);
+      transform: translateX(-90px) rotate(-8deg);
+    }
+
+    .mound::after {
+      transform: translateX(90px) rotate(8deg);
+      width: 90px;
+      opacity: .8;
+    }
+
+    .mound .leaf {
+      position: absolute;
+      bottom: 28px;
+      width: 96px;
+      height: 48px;
+      border-radius: 40px;
+      background: linear-gradient(90deg, #1dd082, var(--verde-hoja));
+      transform-origin: left center;
+      opacity: 0.95;
+      filter: drop-shadow(0 8px 12px #0006);
+    }
+
+    .mound .leaf.left {
+      left: -58px;
+      transform: rotate(-18deg) scale(.95);
+      clip-path: ellipse(70% 70% at 20% 50%);
+    }
+
+    .mound .leaf.right {
+      right: -58px;
+      transform: rotate(18deg) scale(.95);
+      clip-path: ellipse(70% 70% at 80% 50%);
+    }
+
+    .stems {
+      position: absolute;
+      left: 50%;
+      bottom: 20%;
+      width: 86%;
+      height: 66%;
+      transform: translateX(-50%);
+      pointer-events: none;
+    }
+
+    .stem {
+      --angle: 0deg;
+      --x: 0px;
+      --len: 78%;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 6px;
+      height: var(--len);
+      transform: translateX(-50%) rotate(var(--angle)) translateX(var(--x));
+      transform-origin: bottom center;
+      background: linear-gradient(180deg, #0b6a3a, var(--verde-tallo));
+      border-radius: 10px;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.12) inset;
+      animation: sway 4.5s ease-in-out infinite;
+      pointer-events: auto;
+    }
+
+    @keyframes sway {
+
+      0%,
+      100% {
+        filter: brightness(1)
+      }
+
+      50% {
+        filter: brightness(1.03)
+      }
+    }
+
+    .stem::before,
+    .stem::after {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 12px;
+      top: 34%;
+      background: radial-gradient(90% 100% at 70% 50%, #1dd082 0%, var(--verde-hoja) 60%, #0b6a3a 100%);
+      border-radius: 90% 10% 90% 10% / 70% 30% 70% 30%;
+      filter: drop-shadow(0 4px 6px #0006);
+    }
+
+    .stem::before {
+      left: -18px;
+      transform: rotate(-25deg);
+    }
+
+    .stem::after {
+      right: -18px;
+      transform: scaleX(-1) rotate(-25deg);
+    }
+
+    .car {
+      position: absolute;
+      left: 50%;
+      top: -8px;
+      transform: translate(-50%, -100%) rotate(var(--angle));
+      width: 120px;
+      max-width: 22vw;
+      aspect-ratio: 16/11;
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .18s ease;
+      box-shadow: 0 12px 24px #0009, 0 0 24px rgba(106, 162, 255, 0.15);
+      background: linear-gradient(180deg, #0a203f, #08223b);
+      border: 1px solid #ffffff10;
+    }
+
+    .car img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    .car:hover {
+      transform: translate(-50%, -104%) scale(1.06);
+    }
+
+    .bow {
+      position: absolute;
+      left: 50%;
+      bottom: 34%;
+      transform: translateX(-50%);
+      width: 180px;
+      height: 16px;
+      border-radius: 12px;
+      background: linear-gradient(90deg, #1d59ff, #6aa2ff 60%, #1d59ff);
+      box-shadow: 0 8px 16px #0006, inset 0 -6px 10px rgba(10, 40, 120, 0.3);
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #0008;
+      backdrop-filter: blur(4px);
+      padding: 20px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .18s ease;
+    }
+
+    .modal.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      position: relative;
+      width: min(920px, 95vw);
+      max-height: 90vh;
+      border-radius: 14px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #0f2446, #071428);
+      border: 1px solid #ffffff14;
+      box-shadow: 0 20px 60px #000c;
+      animation: pop .18s ease-out;
+    }
+
+    .modal-content img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .close {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: #081a36;
+      color: #fff;
+      font-size: 18px;
+      box-shadow: 0 8px 20px #0008;
+    }
+
+    .credit {
+      position: fixed;
+      right: 12px;
+      bottom: 10px;
+      opacity: .5;
+      font-size: 12px;
+    }
+
+    /* Responsive */
+    @media (max-width:620px) {
+      .car {
+        width: 100px;
+      }
+
+      .mound {
+        width: 200px;
+        height: 96px;
+      }
+
+      .bow {
+        width: 140px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="background">
-  <div class="stars"></div>
-  <div class="stars2"></div>
-</div>
-
-<!-- PANTALLA 1 -->
-<section id="screen1" class="screen">
-  <div class="start-card">
-    <div class="tap-title">Amor, tengo un regalo especial</div>
-    <div id="heartTap" class="heart" aria-label="Abrir">💙</div>
-    <!-- imagen pequeña debajo del corazón (local img) -->
-    <img id="tinyImage" class="tiny-img" alt="detalle" src="img/Uno.jpeg" />
-    <button id="openBtn" class="tap-btn" type="button">Abrir💙</button>
+  <div class="background">
+    <div class="stars"></div>
+    <div class="stars2"></div>
   </div>
-</section>
 
-<!-- PANTALLA 2 -->
-<section id="screen2" class="screen hidden">
-  <div class="stage">
-    <h1 class="headline">
-      <span id="titleLine">Feliz 30 de septiembre</span>
-      <span class="date" id="subtitleLine">amor 💙</span>
-    </h1>
+  <!-- PANTALLA 1 -->
+  <section id="screen1" class="screen">
+    <div class="start-card">
+      <div class="tap-title">Amor, tengo un regalo especial</div>
+      <div id="heartTap" class="heart" aria-label="Abrir">💙</div>
 
-    <div class="bouquet floating" aria-label="Ramo de carritos">
-      <!-- Montículo de tierra con hojas -->
-      <div class="mound">
-        <div class="leaf left"></div>
-        <div class="leaf right"></div>
-      </div>
+      <img id="tinyImage" class="tiny-img" alt="detalle" src="img/Uno.jpeg" />
+      <button id="openBtn" class="tap-btn" type="button">Abrir💙</button>
+    </div>
+  </section>
 
-      <!-- Lazo sutil encima de montículo -->
-      <div class="bow" aria-hidden="true"></div>
-<br>
-<br>
-      <!-- Tallos (pointer-events enabled on .car) -->
-      <div class="stems" aria-hidden="false">
-        <div class="stem" style="--angle:-20deg; --x:-44px; --len:76%;">
-          <div class="car" data-modal="0" style="--angle:6deg;">
-            <img alt="Carrito 1" src="img/Doss.jpeg" />
-          </div>
+  <!-- PANTALLA 2 -->
+  <section id="screen2" class="screen hidden">
+    <div class="stage">
+      <h1 class="headline">
+        <span id="titleLine">Feliz 30 de septiembre</span>
+        <span class="date" id="subtitleLine">amor 💙</span>
+      </h1>
+
+      <div class="bouquet floating" aria-label="Ramo de carritos">
+
+        <div class="mound">
+          <div class="leaf left"></div>
+          <div class="leaf right"></div>
         </div>
 
-        <div class="stem" style="--angle:-10deg; --x:-22px; --len:82%;">
-          <div class="car" data-modal="1" style="--angle:4deg;">
-            <img alt="Carrito 2" src="img/Tres.jpeg" />
+        <div class="bow" aria-hidden="true"></div>
+        <br>
+        <br>
+        <!-- Tallos  -->
+        <div class="stems" aria-hidden="false">
+          <div class="stem" style="--angle:-20deg; --x:-44px; --len:76%;">
+            <div class="car" data-modal="0" style="--angle:6deg;">
+              <img alt="Carrito 1" src="img/Doss.jpeg" />
+            </div>
           </div>
-        </div>
 
-        <div class="stem" style="--angle:-2deg; --x:-6px; --len:86%;">
-          <div class="car" data-modal="2" style="--angle:0deg;">
-            <img alt="Carrito 3" src="img/Tress.jpg" />
+          <div class="stem" style="--angle:-10deg; --x:-22px; --len:82%;">
+            <div class="car" data-modal="1" style="--angle:4deg;">
+              <img alt="Carrito 2" src="img/Tres.jpeg" />
+            </div>
           </div>
-        </div>
 
-        <div class="stem" style="--angle:2deg; --x:6px; --len:86%;">
-          <div class="car" data-modal="3" style="--angle:0deg;">
-            <img alt="Carrito 4" src="img/Cuatross.jpg" />
+          <div class="stem" style="--angle:-2deg; --x:-6px; --len:86%;">
+            <div class="car" data-modal="2" style="--angle:0deg;">
+              <img alt="Carrito 3" src="img/Tress.jpg" />
+            </div>
           </div>
-        </div>
 
-        <div class="stem" style="--angle:10deg; --x:24px; --len:82%;">
-          <div class="car" data-modal="4" style="--angle:-4deg;">
-            <img alt="Carrito 5" src="img/Cincoss.jpg" />
+          <div class="stem" style="--angle:2deg; --x:6px; --len:86%;">
+            <div class="car" data-modal="3" style="--angle:0deg;">
+              <img alt="Carrito 4" src="img/Cuatross.jpg" />
+            </div>
           </div>
-        </div>
 
-        <div class="stem" style="--angle:20deg; --x:44px; --len:76%;">
-          <div class="car" data-modal="5" style="--angle:-6deg;">
-            <img alt="Carrito 6" src="img/Seiss.jpg" />
+          <div class="stem" style="--angle:10deg; --x:24px; --len:82%;">
+            <div class="car" data-modal="4" style="--angle:-4deg;">
+              <img alt="Carrito 5" src="img/Cincoss.jpg" />
+            </div>
+          </div>
+
+          <div class="stem" style="--angle:20deg; --x:44px; --len:76%;">
+            <div class="car" data-modal="5" style="--angle:-6deg;">
+              <img alt="Carrito 6" src="img/Seiss.jpg" />
+            </div>
           </div>
         </div>
       </div>
     </div>
+  </section>
+
+  <!-- MODAL -->
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-content">
+      <button class="close" aria-label="Cerrar">✕</button>
+      <img id="modalImg" alt="Foto del carrito" src="" />
+    </div>
   </div>
-</section>
 
-<!-- MODAL -->
-<div id="modal" class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-  <div class="modal-content">
-    <button class="close" aria-label="Cerrar">✕</button>
-    <img id="modalImg" alt="Foto del carrito" src="" />
-  </div>
-</div>
+  <div class="credit">Hecho con 💙 — Culqui</div>
 
-<div class="credit">Hecho con 💙 — Culqui</div>
+  <audio id="bgMusic" src="music/Reik.mp3" preload="auto"></audio>
 
-<audio id="bgMusic" src="music/Reik.mp3" preload="auto"></audio>
+  <script>
+    const CONFIG = {
+      title: 'Feliz 30 de septiembre amor❤️',
 
-<script>
-  // CONFIG: títulos y rutas de imágenes locales (modifica si cambias nombres)
-  const CONFIG = {
-    title: 'Feliz 30 de septiembre amor❤️',
-    
-    tinyImage: 'img/Uno.jpeg',
-    thumbs: [
-      'img/Car1.jpg',
-      'img/Car2.jpg',
-      'img/Car3.jpg',
-      'img/Car4.jpg',
-      'img/Car5.jpg',
-      'img/Car6.jpg'
-    ],
-    modals: [
-      'img/Doss.jpeg',
-      'img/Tres.jpeg',
-      'img/Cuatro.jpeg',
-      'img/Cinco.jpeg',
-      'img/Seis.jpeg',
-      'img/Siete.jpeg'
-    ]
-  };
+      tinyImage: 'img/Uno.jpeg',
+      thumbs: [
+        'img/Car1.jpg',
+        'img/Car2.jpg',
+        'img/Car3.jpg',
+        'img/Car4.jpg',
+        'img/Car5.jpg',
+        'img/Car6.jpg'
+      ],
+      modals: [
+        'img/Doss.jpeg',
+        'img/Tres.jpeg',
+        'img/Cuatro.jpeg',
+        'img/Cinco.jpeg',
+        'img/Seis.jpeg',
+        'img/Siete.jpeg'
+      ]
+    };
 
-  // Aplica textos e imágenes
-  document.getElementById('titleLine').textContent = CONFIG.title;
-  document.getElementById('subtitleLine').textContent = CONFIG.subtitle;
-  document.getElementById('tinyImage').src = CONFIG.tinyImage;
+    document.getElementById('titleLine').textContent = CONFIG.title;
+    document.getElementById('subtitleLine').textContent = CONFIG.subtitle;
+    document.getElementById('tinyImage').src = CONFIG.tinyImage;
 
-  // Asigna thumbs (por si los cambias en CONFIG)
-  document.querySelectorAll('.car img').forEach((img, idx) => {
-    if (CONFIG.thumbs[idx]) img.src = CONFIG.thumbs[idx];
-  });
-
-  // Pantallas
-  const screen1 = document.getElementById('screen1');
-  const screen2 = document.getElementById('screen2');
-  const openers = [document.getElementById('openBtn'), document.getElementById('heartTap'), document.getElementById('tinyImage')];
-  openers.forEach(el => el.addEventListener('click', () => {
-    screen1.classList.add('hidden');
-    screen2.classList.remove('hidden');
-    // small focus trap (accessibility)
-    setTimeout(()=> { document.querySelector('.car')?.focus?.(); }, 250);
-  }));
-
-  // Modal logic
-  const modal = document.getElementById('modal');
-  const modalImg = document.getElementById('modalImg');
-  const closeBtn = modal.querySelector('.close');
-
-  document.querySelectorAll('.car').forEach(el => {
-    el.addEventListener('click', (ev) => {
-      const idx = Number(el.dataset.modal) || 0;
-      modalImg.src = CONFIG.modals[idx] || CONFIG.thumbs[idx] || '';
-      modal.classList.add('open');
+    document.querySelectorAll('.car img').forEach((img, idx) => {
+      if (CONFIG.thumbs[idx]) img.src = CONFIG.thumbs[idx];
     });
-  });
 
-  const closeModal = () => {
-    modal.classList.remove('open');
-  };
-  closeBtn.addEventListener('click', closeModal);
-  modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    // Pantallas
+    const screen1 = document.getElementById('screen1');
+    const screen2 = document.getElementById('screen2');
+    const openers = [document.getElementById('openBtn'), document.getElementById('heartTap'), document.getElementById('tinyImage')];
+    openers.forEach(el => el.addEventListener('click', () => {
+      screen1.classList.add('hidden');
+      screen2.classList.remove('hidden');
 
-  // ensure focus on close when opened
-  const observer = new MutationObserver(() => {
-    if (modal.classList.contains('open')) closeBtn.focus();
-  });
-  observer.observe(modal, { attributes:true, attributeFilter:['class'] });
+      setTimeout(() => { document.querySelector('.car')?.focus?.(); }, 250);
+    }));
+
+    // Modal logic
+    const modal = document.getElementById('modal');
+    const modalImg = document.getElementById('modalImg');
+    const closeBtn = modal.querySelector('.close');
+
+    document.querySelectorAll('.car').forEach(el => {
+      el.addEventListener('click', (ev) => {
+        const idx = Number(el.dataset.modal) || 0;
+        modalImg.src = CONFIG.modals[idx] || CONFIG.thumbs[idx] || '';
+        modal.classList.add('open');
+      });
+    });
+
+    const closeModal = () => {
+      modal.classList.remove('open');
+    };
+    closeBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+    const observer = new MutationObserver(() => {
+      if (modal.classList.contains('open')) closeBtn.focus();
+    });
+    observer.observe(modal, { attributes: true, attributeFilter: ['class'] });
 
 
-  const bgMusic = document.getElementById('bgMusic');
+    const bgMusic = document.getElementById('bgMusic');
 
-// Reproduce al abrir pantalla 2
-openers.forEach(el => el.addEventListener('click', () => {
-  bgMusic.volume = 0.7; // puedes ajustar el volumen
-  bgMusic.play().catch(() => {
-    // Algunos navegadores piden interacción directa
-    console.log("Esperando interacción del usuario para reproducir.");
-  });
-}));
+    // Reproduce al abrir pantalla 2
+    openers.forEach(el => el.addEventListener('click', () => {
+      bgMusic.volume = 0.7; // puedes ajustar el volumen
+      bgMusic.play().catch(() => {
+        console.log("Esperando interacción del usuario para reproducir.");
+      });
+    }));
 
 
-</script>
+  </script>
 
 
 </body>
+
 </html>
